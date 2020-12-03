@@ -1,0 +1,7 @@
+matplotlib
+numpy==1.19.0
+peewee
+PyQt5
+PyQt5-stubs
+pyshp
+requests

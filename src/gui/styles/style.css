@@ -1,0 +1,76 @@
+MainWindow, MainWindow *,
+NewFlightWindow, NewFlightWindow * {
+    background-color: #2f3640;
+    color: #dcdde1;
+}
+
+QScrollArea, QGroupBox {
+    border: none;
+}
+
+QLineEdit, QDateEdit, QTimeEdit,
+QLineEdit[status='valid'], QDateEdit[status='valid'], QTimeEdit[status='valid'] {
+    border: 2px solid #1a1e24;
+    border-radius: 5px;
+    padding: 3px
+}
+
+QLineEdit:hover, QDateEdit:hover, QTimeEdit:hover,
+QLineEdit[status='valid']:hover, QDateEdit[status='valid']:hover, QTimeEdit[status='valid']:hover{
+    border: 2px solid #345778;
+    border-radius: 5px;
+}
+
+QLineEdit:focus, QDateEdit:focus, QTimeEdit:focus,
+QLineEdit[status='valid']:focus, QDateEdit[status='valid']:focus, QTimeEdit[status='valid']:focus{
+    border: 2px solid #0097e6;
+    border-radius: 5px;
+}
+
+QLineEdit[status='invalid'], QDateEdit[status='invalid'], QTimeEdit[status='invalid'] {
+    border: 2px solid #701614;
+    border-radius: 5px;
+    padding: 3px
+}
+
+QLineEdit[status='invalid']:hover, QDateEdit[status='invalid']:hover, QTimeEdit[status='invalid']:hover{
+    border: 2px solid #ab3213;
+    border-radius: 5px;
+}
+
+QLineEdit[status='invalid']:focus, QDateEdit[status='invalid']:focus, QTimeEdit[status='invalid']:focus{
+    border: 2px solid #e84118;
+    border-radius: 5px;
+}
+
+QLabel[color='color_error'] {
+    color: #e84118;
+}
+
+QLabel[color='color_ok'] {
+    color: #27ae60;
+}
+
+QPushButton {
+    background-color: #272d37;
+    border: 3px solid #3d4756;
+    border-right-color: #1a1e24;
+    border-bottom-color: #1a1e24;
+    padding: 6px;
+}
+
+QPushButton:pressed {
+    border: 3px solid #1a1e24;
+    border-left-width: 4px;
+    border-top-width: 4px;
+    border-right-color: #3d4756;
+    border-bottom-color: #3d4756;
+}
+
+#label_ready {
+    color: #27ae60;
+}
+
+#clock, #label_copyright {
+    color: #869fb3;
+}
