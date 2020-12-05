@@ -11,18 +11,42 @@ class PendingFlightsWindow(QtW.QWidget):
 
         self.__layout = QtW.QGridLayout()
 
-        header = QtW.QLabel('Showing next 5 flights')
+        self.setWindowModality(Qt.WindowModality(2))
+        self.setFixedSize(480, 300)
+        self.setWindowTitle('Pending flights')
+        self.setLayout(self.__layout)
+        self.setStyleSheet(Settings().style)
+
+    def __show_details(self, flight_id):
+        self.__details = FlightDetailsWindow(flight_id)
+        self.__details.show()
+
+    def __delete_flight(self, flight_id):
+        FlightStatistics.delete_by_id(flight_id)
+        self.update_flight_schedule()
+
+    def __clear_layout(self):
+        for i in reversed(range(self.__layout.count())):
+            self.__layout.itemAt(i).widget().setParent(None)
+
+    def update_flight_schedule(self):
+        self.__clear_layout()
+
+        query = FlightStatistics.select().where(FlightStatistics.actual_arrival_time == None).limit(5)
+        if query.count() == 0:
+            header = QtW.QLabel('There are no flights')
+        else:
+            header = QtW.QLabel('Showing next 5 flights')
+
         header_font = header.font()
         header_font.setPixelSize(22)
         header.setFont(header_font)
         self.__layout.addWidget(header, 0, 0, 1, 5, Qt.AlignHCenter)
 
-        query = FlightStatistics.select().where(FlightStatistics.actual_arrival_time == None).limit(2)
-
         for pos, flight in enumerate(query):
             details_button = QtW.QPushButton('D', self)
             open_button = QtW.QPushButton('O', self)
-            delete_button = QtW.QPushButton('C', self)
+            delete_button = QtW.QPushButton('X', self)
 
             delete_button.setProperty('status', 'danger')
 
@@ -36,22 +60,3 @@ class PendingFlightsWindow(QtW.QWidget):
             self.__layout.addWidget(details_button, pos+1, 2)
             self.__layout.addWidget(open_button, pos+1, 3)
             self.__layout.addWidget(delete_button, pos+1, 4)
-
-        self.setWindowModality(Qt.WindowModality(2))
-        self.setFixedSize(480, 300)
-        self.setWindowTitle('Pending flights')
-        self.setLayout(self.__layout)
-        self.setStyleSheet(Settings().style)
-
-    def __show_details(self, flight_id):
-        self.__details = FlightDetailsWindow(flight_id)
-        self.__details.show()
-
-    def __delete_flight(self, flight_id):
-        pass
-
-    def __update_flight_schedule(self):
-        # todo
-        # this will be needed because now if you open pending window after adding a new flights,
-        # there will be no changes
-        pass

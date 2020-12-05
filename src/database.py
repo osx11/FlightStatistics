@@ -27,13 +27,10 @@ class FlightStatistics(Model):
     def open_flight(self):
         pass
 
-    def delete_flight(self):
-        pass
-
 
 class FlightPoints(Model):
     coordinates = CharField(max_length=255)
-    flight_id = ForeignKeyField(FlightStatistics, related_name='flight_points', null=True)
+    flight_id = ForeignKeyField(FlightStatistics, backref='flight_points', null=True)
 
     class Meta:
         database = SqliteDatabase(Settings().database_file)

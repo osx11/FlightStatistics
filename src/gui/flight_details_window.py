@@ -41,7 +41,7 @@ class FlightDetailsWindow(QtW.QWidget):
         self.__layout.addWidget(QtW.QLabel('Aircraft'), 9, 0)
         self.__layout.addWidget(QtW.QLabel(flight.aircraft), 9, 1)
 
-        if flight.actual_departure_time > flight.scheduled_departure_time:
+        if flight.actual_departure_time and flight.actual_departure_time > flight.scheduled_departure_time:
             hours_diff = int(flight.actual_departure_time[:2]) - int(flight.scheduled_departure_time[:2])
             minutes_diff = int(flight.actual_departure_time[3:]) - int(flight.scheduled_departure_time[3:])
             delayed_label = QtW.QLabel(f'With a delay of {hours_diff}:{minutes_diff}')

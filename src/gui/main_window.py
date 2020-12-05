@@ -72,7 +72,7 @@ class MainWindow(QtW.QWidget):
         button_new_flight.clicked.connect(self.__new_flight_window.show)
 
         self.__pending_flights_window = PendingFlightsWindow()
-        button_show_pending.clicked.connect(self.__pending_flights_window.show)
+        button_show_pending.clicked.connect(self.__show_pending_flights_window)
 
     def __render_flights(self):
         query = (FlightStatistics
@@ -117,3 +117,7 @@ class MainWindow(QtW.QWidget):
 
             self.__clock.setText(f'{hour}:{minute}Z')
             sleep(remaining)
+
+    def __show_pending_flights_window(self):
+        self.__pending_flights_window.update_flight_schedule()
+        self.__pending_flights_window.show()

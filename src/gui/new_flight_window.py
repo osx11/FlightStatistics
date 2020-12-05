@@ -22,6 +22,7 @@ class NewFlightWindow(FormUtils, QtW.QWidget):
         label_date = QtW.QLabel('Scheduled date')
         self.__input_date = QtW.QDateEdit()
         self.__input_date.setButtonSymbols(QtW.QAbstractSpinBox.NoButtons)
+        self.__input_date.dateChanged.connect(lambda: self.__revalidate_datetime_field(self.__input_date))
 
         label_time = QtW.QLabel('And time')
         self.__input_time = QtW.QTimeEdit()
@@ -101,6 +102,9 @@ class NewFlightWindow(FormUtils, QtW.QWidget):
     def __revalidate_field_on_input(self, field):
         super()._revalidate_field_on_input(field)
 
+    def __revalidate_datetime_field(self, field):
+        super().validate_datetime_field(field)
+
     def __handle_icao_input(self, icao_field, city_field):
         icao_field.setText(icao_field.text().upper())
         city_field.setText('Please wait...')
@@ -114,7 +118,7 @@ class NewFlightWindow(FormUtils, QtW.QWidget):
 
         data = json.loads(response.content.decode('utf-8'))
         if 'airports' not in data:
-            city_field.setText('Cannot fetch city')
+            city_field.setText('Fetching failed')
             return
 
         city_name = data['airports'][0]['city']
@@ -122,7 +126,7 @@ class NewFlightWindow(FormUtils, QtW.QWidget):
 
     def __submit(self):
         self.__label_status.hide()
-        validation_result = super()._validate_fields()
+        validation_result = super()._validate_all_fields()
 
         if not validation_result:
             self.__set_status('Something\'s wrong! Check fields.', is_error=True)
