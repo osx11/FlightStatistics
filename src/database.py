@@ -24,6 +24,12 @@ class FlightStatistics(Model):
     class Meta:
         database = SqliteDatabase(Settings().database_file)
 
+    def open_flight(self):
+        pass
+
+    def delete_flight(self):
+        pass
+
 
 class FlightPoints(Model):
     coordinates = CharField(max_length=255)

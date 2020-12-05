@@ -7,7 +7,7 @@ class Settings:
     def __init__(self):
         self.__path_countries = 'C:/Users/osx11/Desktop/World_Countries/World_Countries'
         self.__path_cities = 'C:/Users/osx11/Desktop/World_Cities/World_Cities'
-        self.__database_file = 'C:/Users/osx11/Documents/Pycharm/Python test/src/flightstatistics.db'
+        self.__database_file = 'C:/Users/osx11/Documents/Pycharm/FlightStatistics/flightstatistics.db'
 
         self.__style = str()
         with open('gui/styles/style.css') as f:

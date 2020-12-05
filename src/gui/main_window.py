@@ -5,6 +5,8 @@ from threading import Thread
 from time import sleep
 from settings import Settings
 from .new_flight_window import NewFlightWindow
+from .pending_flights_window import PendingFlightsWindow
+from .flight_details_window import FlightDetailsWindow
 from database import FlightStatistics
 
 
@@ -26,6 +28,7 @@ class MainWindow(QtW.QWidget):
         for i in range(24):
             self.__layout.addWidget(QtW.QLabel(f'{i}:00'), 0, i+1)
 
+        # this have to be filled with empty labels otherwise timebars will be displayed incorrectly
         for i in range(25):
             self.__saved_flights_layout.addWidget(QtW.QLabel(''), 0, i)
         self.__render_flights()
@@ -33,9 +36,6 @@ class MainWindow(QtW.QWidget):
         label_ready = QtW.QLabel('READY')
         label_ready.setObjectName('label_ready')
         self.__layout.addWidget(label_ready, 0, 25)
-
-        # self.__saved_flights_layout.addWidget(TimeBarWidget('UUEE-UNWW'), 0, 1, 1, 5)
-        # self.__saved_flights_layout.addWidget(TimeBarWidget('OMDB-EFHK'), 2, 3, 1, (25-3))
 
         self.__group_box.setLayout(self.__saved_flights_layout)
         self.__scroll_area = QtW.QScrollArea()
@@ -47,7 +47,6 @@ class MainWindow(QtW.QWidget):
 
         button_new_flight = QtW.QPushButton('New flight', self)
         button_show_pending = QtW.QPushButton('Show pending', self)
-        # bind
         button_stats = QtW.QPushButton('Show total', self)
         # bind
         button_import = QtW.QPushButton('Import', self)
@@ -71,6 +70,9 @@ class MainWindow(QtW.QWidget):
 
         self.__new_flight_window = NewFlightWindow()
         button_new_flight.clicked.connect(self.__new_flight_window.show)
+
+        self.__pending_flights_window = PendingFlightsWindow()
+        button_show_pending.clicked.connect(self.__pending_flights_window.show)
 
     def __render_flights(self):
         query = (FlightStatistics
