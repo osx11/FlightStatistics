@@ -85,6 +85,14 @@ QPushButton[status='danger']:pressed {
     border-bottom-color: #e84118;
 }
 
+QPushButton:disabled {
+    background-color: #23262b;
+    border: 3px solid #2c323c;
+    border-right-color: #1d1d21;
+    border-bottom-color: #1d1d21;
+    padding: 6px;
+}
+
 #label_ready {
     color: #27ae60;
 }

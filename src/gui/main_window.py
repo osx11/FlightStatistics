@@ -28,10 +28,7 @@ class MainWindow(QtW.QWidget):
         for i in range(24):
             self.__layout.addWidget(QtW.QLabel(f'{i}:00'), 0, i+1)
 
-        # this have to be filled with empty labels otherwise timebars will be displayed incorrectly
-        for i in range(25):
-            self.__saved_flights_layout.addWidget(QtW.QLabel(''), 0, i)
-        self.__render_flights()
+        self.render_flights()
 
         label_ready = QtW.QLabel('READY')
         label_ready.setObjectName('label_ready')
@@ -71,10 +68,20 @@ class MainWindow(QtW.QWidget):
         self.__new_flight_window = NewFlightWindow()
         button_new_flight.clicked.connect(self.__new_flight_window.show)
 
-        self.__pending_flights_window = PendingFlightsWindow()
+        self.__pending_flights_window = PendingFlightsWindow(self)
         button_show_pending.clicked.connect(self.__show_pending_flights_window)
 
-    def __render_flights(self):
+    def __clear_saved_flights_layout(self):
+        for i in reversed(range(self.__saved_flights_layout.count())):
+            self.__saved_flights_layout.itemAt(i).widget().setParent(None)
+
+        # this have to be filled with empty labels otherwise timebars will be displayed incorrectly
+        for i in range(25):
+            self.__saved_flights_layout.addWidget(QtW.QLabel(''), 0, i)
+
+    def render_flights(self):
+        self.__clear_saved_flights_layout()
+
         query = (FlightStatistics
                  .select()
                  .where(FlightStatistics.actual_arrival_time != None)
