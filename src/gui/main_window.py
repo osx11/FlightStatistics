@@ -3,6 +3,7 @@ from .widgets.time_bar_widget import TimeBarWidget
 from datetime import datetime
 from threading import Thread
 from time import sleep
+from math import ceil
 from settings import Settings
 from .new_flight_window import NewFlightWindow
 from .pending_flights_window import PendingFlightsWindow
@@ -94,7 +95,7 @@ class MainWindow(QtW.QWidget):
             arrival_date = flight.actual_arrival_date[:5]
             actual_departure_hour = int(flight.actual_departure_time[:2])
             actual_arrival_hour = int(flight.actual_arrival_time[:2])
-            flight_time = int(flight.flight_time[:2])
+            flight_time = ceil(float(flight.flight_time[:2]) + float(flight.flight_time[-2:])/60)
 
             arrived_next_day = arrival_date > departure_date
 
