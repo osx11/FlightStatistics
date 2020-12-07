@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets as QtW
+from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import Qt
 import requests
 import json
@@ -61,6 +62,7 @@ class NewFlightWindow(FormUtils, QtW.QWidget):
         super().__init__(self.__needs_validation, [self.__input_date], [self.__input_time])
 
         button_submit = QtW.QPushButton('Confirm', self)
+        button_submit.setCursor(QCursor(Qt.PointingHandCursor))
         button_submit.clicked.connect(self.__submit)
 
         self.__layout.addWidget(label_flight, 0, 0)
@@ -132,8 +134,11 @@ class NewFlightWindow(FormUtils, QtW.QWidget):
             self.__set_status('Something\'s wrong! Check fields.', is_error=True)
             return
 
+        formatted_date = self.__input_date.text()
+        formatted_date = formatted_date[:6] + formatted_date[-2:]
+
         FlightStatistics.create(flight_number=self.__input_flight.text(),
-                                scheduled_departure_date=self.__input_date.text(),
+                                scheduled_departure_date=formatted_date,
                                 scheduled_departure_time=self.__input_time.text(),
                                 aircraft=self.__input_aircraft.text(),
                                 departure_icao=self.__input_departure_icao.text(),
@@ -152,7 +157,7 @@ class NewFlightWindow(FormUtils, QtW.QWidget):
         if is_error:
             self.__label_status.setProperty('color', 'color_red')
         else:
-            self.__label_status.setProperty('color', 'color_blue')
+            self.__label_status.setProperty('color', 'color_green')
 
         self.__label_status.style().polish(self.__label_status)
         self.__label_status.show()

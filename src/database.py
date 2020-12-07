@@ -1,5 +1,6 @@
 from peewee import *
 from datetime import datetime, time
+from time import sleep
 from settings import Settings
 
 
@@ -24,6 +25,27 @@ class FlightStatistics(Model):
 
     class Meta:
         database = SqliteDatabase(Settings().database_file)
+
+    @staticmethod
+    def delete_old_scheduled_flights(schedule_next=False):
+        # !NOT FOR RUNNING IN THE CURRENT THREAD IF schedule_next == True!
+
+        now = datetime.now()
+
+        query = (FlightStatistics
+                 .select()
+                 .where(FlightStatistics.scheduled_departure_date < now.strftime('%d.%m.%y'))
+                 .where(FlightStatistics.flight_time == None))
+
+        for flight in query:
+            FlightStatistics.delete_by_id(flight.id)
+
+        if schedule_next:
+            now = datetime.now()
+            tomorrow = datetime(now.year, now.month, now.day + 1, 0, 0, 0)
+            diff = tomorrow - now
+
+            sleep(diff.seconds)
 
     @classmethod
     def has_opened_flight(cls):

@@ -1,5 +1,7 @@
 from PyQt5 import QtWidgets as QtW
+from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import Qt
+from datetime import datetime
 from database import FlightStatistics
 from settings import Settings
 from .flight_details_window import FlightDetailsWindow
@@ -43,7 +45,12 @@ class PendingFlightsWindow(QtW.QWidget):
     def update_flight_schedule(self):
         self.__clear_layout()
 
-        query = FlightStatistics.select().where(FlightStatistics.actual_arrival_time == None).limit(5)
+        query = (FlightStatistics
+                 .select()
+                 .where(FlightStatistics.actual_arrival_time == None)
+                 .limit(5)
+                 .order_by(FlightStatistics.scheduled_departure_date))
+
         if query.count() == 0:
             header = QtW.QLabel('There are no flights')
         else:
@@ -67,9 +74,17 @@ class PendingFlightsWindow(QtW.QWidget):
                     openclose_button.setDisabled(True)
             else:
                 openclose_button = QtW.QPushButton('O', self)
-                openclose_button.clicked.connect(lambda checked, flight_id=flight.id: self.__open_flight(flight_id))
+
+                now = datetime.now()
+                if now.strftime('%d.%m.%y') != flight.scheduled_departure_date:
+                    openclose_button.setDisabled(True)
+                else:
+                    openclose_button.clicked.connect(lambda checked, flight_id=flight.id: self.__open_flight(flight_id))
 
             delete_button.setProperty('color', 'color_red')
+            delete_button.setCursor(QCursor(Qt.PointingHandCursor))
+            details_button.setCursor(QCursor(Qt.PointingHandCursor))
+            openclose_button.setCursor(QCursor(Qt.PointingHandCursor))
 
             details_button.clicked.connect(lambda checked, flight_id=flight.id: self.__show_details(flight_id))
             delete_button.clicked.connect(lambda checked, flight_id=flight.id: self.__delete_flight(flight_id))

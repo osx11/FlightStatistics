@@ -1,4 +1,6 @@
 from PyQt5 import QtWidgets as QtW
+from PyQt5.QtGui import QCursor
+from PyQt5.QtCore import Qt
 from .widgets.time_bar_widget import TimeBarWidget
 from datetime import datetime
 from threading import Thread
@@ -50,6 +52,11 @@ class MainWindow(QtW.QWidget):
         button_import = QtW.QPushButton('Import', self)
         # bind
 
+        button_new_flight.setCursor(QCursor(Qt.PointingHandCursor))
+        button_show_pending.setCursor(QCursor(Qt.PointingHandCursor))
+        button_stats.setCursor(QCursor(Qt.PointingHandCursor))
+        button_import.setCursor(QCursor(Qt.PointingHandCursor))
+
         self.__layout.addWidget(button_new_flight, 2, 0, 1, 3)
         self.__layout.addWidget(button_show_pending, 2, 3, 1, 3)
         self.__layout.addWidget(button_stats, 2, 6, 1, 3)
@@ -86,7 +93,7 @@ class MainWindow(QtW.QWidget):
         query = (FlightStatistics
                  .select()
                  .where(FlightStatistics.actual_arrival_time != None)
-                 .order_by(FlightStatistics.scheduled_departure_time))
+                 .order_by(FlightStatistics.scheduled_departure_date))
 
         self.__row_count = query.count()
 
@@ -99,15 +106,18 @@ class MainWindow(QtW.QWidget):
 
             arrived_next_day = arrival_date > departure_date
 
+            timebar = TimeBarWidget(f'{flight.departure_icao}-{flight.arrival_icao}', flight_time, flight.id)
+            timebar_nextday = TimeBarWidget(f'{flight.departure_icao}-{flight.arrival_icao}', flight_time, flight.id)
+
             if not arrived_next_day:
                 self.__saved_flights_layout.addWidget(QtW.QLabel(departure_date), pos, 0)
-                self.__saved_flights_layout.addWidget(TimeBarWidget(f'{flight.departure_icao}-{flight.arrival_icao}'), pos, actual_departure_hour, 1, flight_time)
+                self.__saved_flights_layout.addWidget(timebar, pos, actual_departure_hour, 1, flight_time)
             else:
                 self.__saved_flights_layout.addWidget(QtW.QLabel(departure_date), pos, 0)
                 self.__saved_flights_layout.addWidget(QtW.QLabel(arrival_date), pos+1, 0)
 
-                self.__saved_flights_layout.addWidget(TimeBarWidget(f'{flight.departure_icao}-{flight.arrival_icao}'), pos, actual_departure_hour, 1, (24-actual_departure_hour))
-                self.__saved_flights_layout.addWidget(TimeBarWidget(f'{flight.departure_icao}-{flight.arrival_icao}'), pos+1, 1, 1, actual_arrival_hour)
+                self.__saved_flights_layout.addWidget(timebar, pos, actual_departure_hour, 1, (24-actual_departure_hour))
+                self.__saved_flights_layout.addWidget(timebar_nextday, pos+1, 1, 1, actual_arrival_hour)
 
     def __update_clock(self):
         while True:

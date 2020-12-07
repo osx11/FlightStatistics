@@ -54,6 +54,7 @@ QLabel[color='color_green'] {
 }
 
 QPushButton {
+    outline: none;
     background-color: #272d37;
     border: 3px solid #3d4756;
     border-right-color: #1a1e24;
