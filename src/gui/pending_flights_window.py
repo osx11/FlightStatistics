@@ -69,7 +69,7 @@ class PendingFlightsWindow(QtW.QWidget):
                 openclose_button = QtW.QPushButton('O', self)
                 openclose_button.clicked.connect(lambda checked, flight_id=flight.id: self.__open_flight(flight_id))
 
-            delete_button.setProperty('status', 'danger')
+            delete_button.setProperty('color', 'color_red')
 
             details_button.clicked.connect(lambda checked, flight_id=flight.id: self.__show_details(flight_id))
             delete_button.clicked.connect(lambda checked, flight_id=flight.id: self.__delete_flight(flight_id))

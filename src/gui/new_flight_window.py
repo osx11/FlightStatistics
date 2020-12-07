@@ -150,9 +150,9 @@ class NewFlightWindow(FormUtils, QtW.QWidget):
         self.__label_status.setText(status)
 
         if is_error:
-            self.__label_status.setProperty('color', 'color_error')
+            self.__label_status.setProperty('color', 'color_red')
         else:
-            self.__label_status.setProperty('color', 'color_ok')
+            self.__label_status.setProperty('color', 'color_blue')
 
         self.__label_status.style().polish(self.__label_status)
         self.__label_status.show()

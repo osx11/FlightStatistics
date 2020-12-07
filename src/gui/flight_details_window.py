@@ -45,7 +45,7 @@ class FlightDetailsWindow(QtW.QWidget):
             hours_diff = int(flight.actual_departure_time[:2]) - int(flight.scheduled_departure_time[:2])
             minutes_diff = int(flight.actual_departure_time[3:]) - int(flight.scheduled_departure_time[3:])
             delayed_label = QtW.QLabel(f'With a delay of {hours_diff}:{minutes_diff}')
-            delayed_label.setProperty('color', 'color_error')
+            delayed_label.setProperty('color', 'color_red')
 
             self.__layout.addWidget(delayed_label, 10, 0, 1, 2, Qt.AlignCenter)
 
