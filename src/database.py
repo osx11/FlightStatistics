@@ -92,16 +92,15 @@ class FlightStatistics(Model):
         return cls.opened_flight if cls.has_opened_flight() else None
 
     @classmethod
-    def add_point(cls, lat, lon):
-        print('got lat lon ', cls.has_opened_flight())
+    def add_point(cls, lat, lon, alt):
         if cls.has_opened_flight():
-            print('set!')
-            FlightPoints.create(flight_id=cls.get_opened_flight(), latitude=lat, longitude=lon)
+            FlightPoints.create(flight_id=cls.get_opened_flight(), latitude=lat, longitude=lon, altitude=alt)
 
 
 class FlightPoints(Model):
     latitude = FloatField()
     longitude = FloatField()
+    altitude = FloatField()
     flight_id = ForeignKeyField(FlightStatistics, backref='flight_points', null=True)
 
     class Meta:

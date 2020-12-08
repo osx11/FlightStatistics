@@ -2,7 +2,8 @@ MainWindow, MainWindow *,
 NewFlightWindow, NewFlightWindow *,
 PendingFlightsWindow, PendingFlightsWindow *,
 FlightDetailsWindow, FlightDetailsWindow *,
-CloseConfirmationWindow, CloseConfirmationWindow * {
+CloseConfirmationWindow, CloseConfirmationWindow *,
+RecordedFlightWindow, RecordedFlightWindow *{
     background-color: #2f3640;
     color: #dcdde1;
 }

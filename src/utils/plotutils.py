@@ -67,3 +67,32 @@ class PlotUtils:
             if zoom_lvl >= 250:
                 return True
             return False
+
+    @staticmethod
+    def choose_color_by_altitude(altitude):
+        if altitude < 1000:
+            return '#55d955'
+
+        if 1000 <= altitude < 5000:
+            return '#d0d955'
+
+        if 5000 <= altitude < 10000:
+            return '#d9a455'
+
+        if 10000 <= altitude < 15000:
+            return '#d97c55'
+
+        if 15000 <= altitude < 20000:
+            return '#d96255'
+
+        if 20000 <= altitude < 25000:
+            return '#f03e3e'
+
+        if 25000 <= altitude < 30000:
+            return '#de4591'
+
+        if 30000 <= altitude < 35000:
+            return '#de45d9'
+
+        if altitude >= 35000:
+            return '#a22ef0'

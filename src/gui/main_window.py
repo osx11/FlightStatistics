@@ -68,11 +68,6 @@ class MainWindow(QtW.QWidget):
 
         Thread(target=self.__update_clock, daemon=True).start()
 
-        self.setWindowTitle('Flight Statistics')
-        self.setLayout(self.__layout)
-        self.setStyleSheet(Settings().style)
-        self.show()
-
         self.__new_flight_window = NewFlightWindow()
         button_new_flight.clicked.connect(self.__new_flight_window.show)
 
@@ -80,6 +75,12 @@ class MainWindow(QtW.QWidget):
         button_show_pending.clicked.connect(self.__show_pending_flights_window)
 
         self.__close_confirmation_window = CloseConfirmationWindow(self)
+
+        self.setFixedSize(1300, 370)
+        self.setWindowTitle('Flight Statistics')
+        self.setLayout(self.__layout)
+        self.setStyleSheet(Settings().style)
+        self.show()
 
     def __clear_saved_flights_layout(self):
         for i in reversed(range(self.__saved_flights_layout.count())):

@@ -1,12 +1,6 @@
-from pydantic import BaseModel
 from socket import *
 from struct import unpack
 from database import FlightStatistics
-
-
-class Point(BaseModel):
-    latitude: float = 0.0
-    longitude: float = 0.0
 
 
 class DataReceiver:
@@ -21,5 +15,6 @@ class DataReceiver:
             data, _ = self.__socket.recvfrom(1024)
             lat = unpack('f', data[9:13])
             lon = unpack('f', data[13:17])
+            alt = unpack('f', data[29:33])
 
-            FlightStatistics.add_point(lat, lon)
+            FlightStatistics.add_point(lat[0], lon[0], alt[0])
