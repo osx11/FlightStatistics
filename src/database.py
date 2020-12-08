@@ -28,7 +28,7 @@ class FlightStatistics(Model):
 
     @staticmethod
     def delete_old_scheduled_flights(schedule_next=False):
-        # !NOT FOR RUNNING IN THE CURRENT THREAD IF schedule_next == True!
+        # !NOT FOR RUNNING IN MAIN THREAD IF schedule_next == True!
 
         now = datetime.now()
 
@@ -70,7 +70,7 @@ class FlightStatistics(Model):
         departure_date = flight.scheduled_departure_date
         departure_time = flight.actual_departure_time
 
-        departure_datetime = datetime(int(departure_date[-4:]),
+        departure_datetime = datetime(int(departure_date[-2:]),
                                       int(departure_date[3:5]),
                                       int(departure_date[:2]),
                                       int(departure_time[:2]),

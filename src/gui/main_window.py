@@ -9,7 +9,7 @@ from math import ceil
 from settings import Settings
 from .new_flight_window import NewFlightWindow
 from .pending_flights_window import PendingFlightsWindow
-from .flight_details_window import FlightDetailsWindow
+from .close_confirmation_window import CloseConfirmationWindow
 from database import FlightStatistics
 
 
@@ -79,6 +79,8 @@ class MainWindow(QtW.QWidget):
         self.__pending_flights_window = PendingFlightsWindow(self)
         button_show_pending.clicked.connect(self.__show_pending_flights_window)
 
+        self.__close_confirmation_window = CloseConfirmationWindow(self)
+
     def __clear_saved_flights_layout(self):
         for i in reversed(range(self.__saved_flights_layout.count())):
             self.__saved_flights_layout.itemAt(i).widget().setParent(None)
@@ -103,6 +105,9 @@ class MainWindow(QtW.QWidget):
             actual_departure_hour = int(flight.actual_departure_time[:2])
             actual_arrival_hour = int(flight.actual_arrival_time[:2])
             flight_time = ceil(float(flight.flight_time[:2]) + float(flight.flight_time[-2:])/60)
+
+            if flight_time == 0:
+                flight_time = 1
 
             arrived_next_day = arrival_date > departure_date
 
@@ -139,3 +144,8 @@ class MainWindow(QtW.QWidget):
     def __show_pending_flights_window(self):
         self.__pending_flights_window.update_flight_schedule()
         self.__pending_flights_window.show()
+
+    def closeEvent(self, event):
+        if FlightStatistics.has_opened_flight():
+            self.__close_confirmation_window.show()
+            event.ignore()

@@ -65,4 +65,10 @@ class TimeBarWidget(QtW.QWidget):
         qp.setPen(QtGui.QColor(0, 0, 0))
         qp.setBrush(QtGui.QColor(0, 0, 0))
 
-        qp.drawText(self.__event_rect, Qt.AlignCenter, self.__text)
+        if self.__duration >= 2:
+            if self.__duration == 2:
+                qp_font = qp.font()
+                qp_font.setPixelSize(14)
+                qp.setFont(qp_font)
+
+            qp.drawText(self.__event_rect, Qt.AlignCenter, self.__text)

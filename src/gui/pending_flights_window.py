@@ -8,10 +8,10 @@ from .flight_details_window import FlightDetailsWindow
 
 
 class PendingFlightsWindow(QtW.QWidget):
-    def __init__(self, main_window):
+    def __init__(self, parent):
         super().__init__()
 
-        self.__main_window = main_window
+        self.__parent = parent
 
         self.__layout = QtW.QGridLayout()
 
@@ -36,7 +36,7 @@ class PendingFlightsWindow(QtW.QWidget):
     def __close_flight(self):
         FlightStatistics.close_flight()
         self.update_flight_schedule()
-        self.__main_window.render_flights()
+        self.__parent.render_flights()
 
     def __clear_layout(self):
         for i in reversed(range(self.__layout.count())):
