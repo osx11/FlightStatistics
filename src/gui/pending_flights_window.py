@@ -31,11 +31,15 @@ class PendingFlightsWindow(QtW.QWidget):
 
     def __open_flight(self, flight_id):
         FlightStatistics.open_flight(flight_id)
+
+        self.__parent.set_status('TRCKNG', 'color_blue')
         self.update_flight_schedule()
 
     def __close_flight(self):
         FlightStatistics.close_flight()
         self.update_flight_schedule()
+
+        self.__parent.set_status('READY')
         self.__parent.render_flights()
 
     def __clear_layout(self):

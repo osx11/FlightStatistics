@@ -22,8 +22,8 @@ class MainWindow(QtW.QWidget):
         self.__saved_flights_layout = QtW.QGridLayout()
         self.__group_box = QtW.QGroupBox()
 
-        self.__clock = QtW.QLabel('READY')
-        self.__clock.setObjectName('clock')
+        self.__clock = QtW.QLabel('00:00')
+        self.__clock.setProperty('color', 'color_vlight')
         self.__layout.addWidget(self.__clock, 0, 0)
 
         self.__row_count = 0
@@ -33,9 +33,9 @@ class MainWindow(QtW.QWidget):
 
         self.render_flights()
 
-        label_ready = QtW.QLabel('READY')
-        label_ready.setObjectName('label_ready')
-        self.__layout.addWidget(label_ready, 0, 25)
+        self.__label_status = QtW.QLabel('READY')
+        self.__label_status.setProperty('color', 'color_green')
+        self.__layout.addWidget(self.__label_status, 0, 25)
 
         self.__group_box.setLayout(self.__saved_flights_layout)
         self.__scroll_area = QtW.QScrollArea()
@@ -63,7 +63,7 @@ class MainWindow(QtW.QWidget):
         self.__layout.addWidget(button_import, 2, 9, 1, 3)
 
         label_copyright = QtW.QLabel('© 2020 osx11')
-        label_copyright.setObjectName('label_copyright')
+        label_copyright.setProperty('color', 'color_vlight')
         self.__layout.addWidget(label_copyright, 2, 24, 1, 2)
 
         Thread(target=self.__update_clock, daemon=True).start()
@@ -81,6 +81,11 @@ class MainWindow(QtW.QWidget):
         self.setLayout(self.__layout)
         self.setStyleSheet(Settings().style)
         self.show()
+
+    def set_status(self, status, color='color_green'):
+        self.__label_status.setText(status)
+        self.__label_status.setProperty('color', color)
+        self.__label_status.style().polish(self.__label_status)
 
     def __clear_saved_flights_layout(self):
         for i in reversed(range(self.__saved_flights_layout.count())):
