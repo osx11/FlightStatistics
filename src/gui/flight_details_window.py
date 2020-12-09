@@ -13,11 +13,11 @@ class FlightDetailsWindow(QtW.QWidget):
         self.__layout = QtW.QGridLayout()
         flight = FlightStatistics.get_by_id(flight_id)
 
-        header_label = QtW.QLabel(f'{flight.flight_number} [{flight.departure_icao}-{flight.arrival_icao}]')
-        header_label_font = header_label.font()
-        header_label_font.setPixelSize(22)
-        header_label.setFont(header_label_font)
-        self.__layout.addWidget(header_label, 0, 0, 1, 2, Qt.AlignCenter)
+        label_header = QtW.QLabel(f'{flight.flight_number} [{flight.departure_icao}-{flight.arrival_icao}]')
+        label_header_font = label_header.font()
+        label_header_font.setPixelSize(22)
+        label_header.setFont(label_header_font)
+        self.__layout.addWidget(label_header, 0, 0, 1, 2, Qt.AlignCenter)
 
         self.__layout.addWidget(QtW.QLabel('Departure city'), 1, 0)
         self.__layout.addWidget(QtW.QLabel(flight.departure_city), 1, 1)
@@ -44,11 +44,19 @@ class FlightDetailsWindow(QtW.QWidget):
         self.__layout.addWidget(QtW.QLabel(flight.aircraft), 9, 1)
 
         if flight.flight_time:
-            flight_time_label = QtW.QLabel(f'BLOCK: {flight.flight_time}')
-            flight_time_label_font = flight_time_label.font()
-            flight_time_label_font.setPixelSize(20)
-            flight_time_label.setFont(flight_time_label_font)
-            self.__layout.addWidget(flight_time_label, 10, 0, 1, 2, Qt.AlignCenter)
+            distance_km = round(flight.distance * 1.85)
+            label_flight_time = QtW.QLabel(f'BLOCK: {flight.flight_time}')
+            label_flight_time_font = label_flight_time.font()
+            label_flight_time_font.setPixelSize(20)
+            label_flight_time.setFont(label_flight_time_font)
+
+            label_distance = QtW.QLabel(f'DIST: {flight.distance} NM ({distance_km} KM)')
+            label_distance_font = label_distance.font()
+            label_distance_font.setPixelSize(20)
+            label_distance.setFont(label_distance_font)
+
+            self.__layout.addWidget(label_flight_time, 10, 0, 1, 2, Qt.AlignCenter)
+            self.__layout.addWidget(label_distance, 11, 0, 1, 2, Qt.AlignCenter)
 
         if flight.actual_departure_time and flight.actual_departure_time > flight.scheduled_departure_time:
             hours_diff = int(flight.actual_departure_time[:2]) - int(flight.scheduled_departure_time[:2])
@@ -63,7 +71,7 @@ class FlightDetailsWindow(QtW.QWidget):
             delayed_label = QtW.QLabel(f'With a delay of {hours_diff}:{minutes_diff}')
             delayed_label.setProperty('color', 'color_red')
 
-            self.__layout.addWidget(delayed_label, 11, 0, 1, 2, Qt.AlignCenter)
+            self.__layout.addWidget(delayed_label, 12, 0, 1, 2, Qt.AlignCenter)
 
         if len(flight.flight_points) > 0:
             points = [[], [], []]
@@ -78,10 +86,10 @@ class FlightDetailsWindow(QtW.QWidget):
             button_show_rfw.clicked.connect(self.__show_recording)
             button_show_rfw.setCursor(QCursor(Qt.PointingHandCursor))
 
-            self.__layout.addWidget(button_show_rfw, 12, 0, 1, 2)
+            self.__layout.addWidget(button_show_rfw, 13, 0, 1, 2)
 
         self.setWindowModality(Qt.WindowModality(2))
-        self.setFixedSize(360, 400)
+        self.setFixedSize(360, 440)
         self.setWindowTitle('Flight details')
         self.setLayout(self.__layout)
         self.setStyleSheet(Settings().style)

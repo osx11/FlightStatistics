@@ -1,6 +1,7 @@
 from peewee import *
 from datetime import datetime, time
 from time import sleep
+from math import atan, sin, cos, pi, sqrt, pow
 from settings import Settings
 
 
@@ -22,6 +23,7 @@ class FlightStatistics(Model):
     departure_city = CharField(max_length=255)
     arrival_city = CharField(max_length=255)
     flight_time = TimeField(formats='HH:MM', null=True)
+    distance = IntegerField(null=True)
 
     class Meta:
         database = SqliteDatabase(Settings().database_file)
@@ -77,11 +79,13 @@ class FlightStatistics(Model):
                                       int(departure_time[-2:]))
         flight_time_delta = now - departure_datetime
         flight_time = time(flight_time_delta.seconds//3660, (flight_time_delta.seconds//60) % 60)
+        total_dist = cls.calculate_total_distance(cls.get_opened_flight())
 
         (FlightStatistics
          .update(actual_arrival_date=now.strftime('%d.%m.%y'),
                  actual_arrival_time=now.strftime('%H:%M'),
-                 flight_time=flight_time.strftime('%H:%M'))
+                 flight_time=flight_time.strftime('%H:%M'),
+                 distance=total_dist)
          .where(FlightStatistics.id == cls.get_opened_flight())
          .execute())
 
@@ -95,6 +99,38 @@ class FlightStatistics(Model):
     def add_point(cls, lat, lon, alt):
         if cls.has_opened_flight():
             FlightPoints.create(flight_id=cls.get_opened_flight(), latitude=lat, longitude=lon, altitude=alt)
+
+    @staticmethod
+    def calculate_total_distance(flight_id):
+        flight = FlightStatistics.get_by_id(flight_id)
+        total_dist = 0
+
+        for i in range(1, len(flight.flight_points)):
+            lat1 = flight.flight_points[i-1].latitude
+            lon1 = flight.flight_points[i-1].longitude
+            lat2 = flight.flight_points[i].latitude
+            lon2 = flight.flight_points[i].longitude
+
+            dist = FlightStatistics.calculate_distance_between_points(lat1, lon1, lat2, lon2)
+            total_dist += dist
+
+        return round(total_dist)
+
+    @staticmethod
+    def calculate_distance_between_points(lat1, lon1, lat2, lon2):
+        earth_radius = 3444  # in nautical miles
+
+        rlat1 = lat1 * pi / 180
+        rlon1 = lon1 * pi / 180
+        rlat2 = lat2 * pi / 180
+        rlon2 = lon2 * pi / 180
+
+        dlon = rlon2 - rlon1
+
+        y = (sqrt(pow(cos(rlat2) * sin(dlon), 2) + pow(cos(rlat1) * sin(rlat2) - sin(rlat1) * cos(rlat2) * cos(dlon), 2)))
+        x = sin(rlat1) * sin(rlat2) + cos(rlat1) * cos(rlat2) * cos(dlon)
+
+        return atan(y / x) * earth_radius
 
 
 class FlightPoints(Model):
