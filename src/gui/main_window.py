@@ -11,6 +11,7 @@ from .new_flight_window import NewFlightWindow
 from .pending_flights_window import PendingFlightsWindow
 from .close_confirmation_window import CloseConfirmationWindow
 from database import FlightStatistics
+from openpyxl import load_workbook
 
 
 class MainWindow(QtW.QWidget):
@@ -41,7 +42,7 @@ class MainWindow(QtW.QWidget):
         self.__scroll_area = QtW.QScrollArea()
         self.__scroll_area.setWidget(self.__group_box)
         self.__scroll_area.setWidgetResizable(True)
-        self.__scroll_area.setFixedHeight(265)
+        self.__scroll_area.setFixedHeight(400)
 
         self.__layout.addWidget(self.__scroll_area, 1, 0, 1, 26)
 
@@ -50,7 +51,7 @@ class MainWindow(QtW.QWidget):
         button_stats = QtW.QPushButton('Show total', self)
         # bind
         button_import = QtW.QPushButton('Import', self)
-        # bind
+        button_import.pressed.connect(self.__import_data)
 
         button_new_flight.setCursor(QCursor(Qt.PointingHandCursor))
         button_show_pending.setCursor(QCursor(Qt.PointingHandCursor))
@@ -76,7 +77,7 @@ class MainWindow(QtW.QWidget):
 
         self.__close_confirmation_window = CloseConfirmationWindow(self)
 
-        self.setFixedSize(1300, 370)
+        self.setFixedSize(1300, 505)
         self.setWindowTitle('Flight Statistics')
         self.setLayout(self.__layout)
         self.setStyleSheet(Settings().style)
@@ -100,8 +101,7 @@ class MainWindow(QtW.QWidget):
 
         query = (FlightStatistics
                  .select()
-                 .where(FlightStatistics.actual_arrival_time != None)
-                 .order_by(FlightStatistics.scheduled_departure_date))
+                 .where(FlightStatistics.actual_arrival_time != None))
 
         self.__row_count = query.count()
 
@@ -111,6 +111,12 @@ class MainWindow(QtW.QWidget):
             actual_departure_hour = int(flight.actual_departure_time[:2])
             actual_arrival_hour = int(flight.actual_arrival_time[:2])
             flight_time = ceil(float(flight.flight_time[:2]) + float(flight.flight_time[-2:])/60)
+
+            if actual_departure_hour == 0:
+                actual_departure_hour = 1
+
+            if actual_arrival_hour == 0:
+                actual_arrival_hour += 1
 
             if flight_time == 0:
                 flight_time = 1
@@ -150,6 +156,45 @@ class MainWindow(QtW.QWidget):
     def __show_pending_flights_window(self):
         self.__pending_flights_window.update_flight_schedule()
         self.__pending_flights_window.show()
+
+    def __import_data(self):
+        file_url = QtW.QFileDialog().getOpenFileName()[0]
+        workbook = load_workbook(file_url)
+        sheet = workbook.active
+
+        i = 6
+        while True:
+            dep_city = sheet[f'A{i}'].value
+
+            if not dep_city:
+                break
+
+            dep_icao = sheet[f'B{i}'].value
+            dep_dt = sheet[f'C{i}'].value
+            arr_city = sheet[f'D{i}'].value
+            arr_icao = sheet[f'E{i}'].value
+            arr_dt = sheet[F'F{i}'].value
+            aircraft = sheet[f'H{i}'].value
+            dist = sheet[f'I{i}'].value
+            flight_time = sheet[f'L{i}'].value
+
+            FlightStatistics.create(flight_number='OSX11',
+                                    scheduled_departure_date=dep_dt.strftime('%d.%m.%y'),
+                                    scheduled_departure_time=dep_dt.strftime('%H:%M'),
+                                    actual_arrival_date=arr_dt.strftime('%d.%m.%y'),
+                                    actual_departure_time=dep_dt.strftime('%H:%M'),
+                                    actual_arrival_time=arr_dt.strftime('%H:%M'),
+                                    aircraft=aircraft,
+                                    departure_icao=dep_icao,
+                                    arrival_icao=arr_icao,
+                                    departure_city=dep_city,
+                                    arrival_city=arr_city,
+                                    flight_time=flight_time.strftime('%H:%M'),
+                                    distance=dist)
+
+            i += 1
+
+        self.render_flights()
 
     def closeEvent(self, event):
         if FlightStatistics.has_opened_flight():

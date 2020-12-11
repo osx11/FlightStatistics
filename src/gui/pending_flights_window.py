@@ -12,7 +12,6 @@ class PendingFlightsWindow(QtW.QWidget):
         super().__init__()
 
         self.__parent = parent
-
         self.__layout = QtW.QGridLayout()
 
         self.setWindowModality(Qt.WindowModality(2))

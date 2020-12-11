@@ -118,6 +118,8 @@ class FlightStatistics(Model):
 
     @staticmethod
     def calculate_distance_between_points(lat1, lon1, lat2, lon2):
+        # formula from https://gis-lab.info/qa/great-circles.html
+
         earth_radius = 3444  # in nautical miles
 
         rlat1 = lat1 * pi / 180
