@@ -159,16 +159,15 @@ class MainWindow(QtW.QWidget):
 
     def __import_data(self):
         file_url = QtW.QFileDialog().getOpenFileName()[0]
+
+        if not file_url:
+            return
+
         workbook = load_workbook(file_url)
         sheet = workbook.active
 
         i = 6
-        while True:
-            dep_city = sheet[f'A{i}'].value
-
-            if not dep_city:
-                break
-
+        while dep_city := sheet[f'A{i}'].value:
             dep_icao = sheet[f'B{i}'].value
             dep_dt = sheet[f'C{i}'].value
             arr_city = sheet[f'D{i}'].value

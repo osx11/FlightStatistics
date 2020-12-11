@@ -5,8 +5,8 @@ class Settings:
         return cls.__instance
 
     def __init__(self):
-        self.__path_countries = 'C:/Users/osx11/Desktop/World_Countries/World_Countries'
-        self.__path_cities = 'C:/Users/osx11/Desktop/World_Cities/World_Cities'
+        self.__path_countries = 'C:/Users/osx11/Documents/Pycharm/FlightStatistics/World_Countries/World_Countries'
+        self.__path_cities = 'C:/Users/osx11/Documents/Pycharm/FlightStatistics/World_Cities/World_Cities'
         self.__database_file = 'C:/Users/osx11/Documents/Pycharm/FlightStatistics/flightstatistics.db'
 
         self.__style = str()
