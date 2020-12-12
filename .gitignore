@@ -2,3 +2,4 @@
 .idea
 venv
 shapefiles
+__pycache__

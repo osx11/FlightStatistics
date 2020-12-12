@@ -63,7 +63,7 @@ class MainWindow(QtW.QWidget):
         self.__layout.addWidget(button_stats, 2, 6, 1, 3)
         self.__layout.addWidget(button_import, 2, 9, 1, 3)
 
-        label_copyright = QtW.QLabel('© 2020 osx11')
+        label_copyright = QtW.QLabel(f'© {datetime.now().year} osx11')
         label_copyright.setProperty('color', 'color_vlight')
         self.__layout.addWidget(label_copyright, 2, 24, 1, 2)
 
@@ -138,7 +138,7 @@ class MainWindow(QtW.QWidget):
 
     def __update_clock(self):
         while True:
-            now = datetime.now()
+            now = datetime.utcnow()
 
             hour = now.hour
             if hour < 10:
