@@ -10,6 +10,7 @@ from settings import Settings
 from .new_flight_window import NewFlightWindow
 from .pending_flights_window import PendingFlightsWindow
 from .close_confirmation_window import CloseConfirmationWindow
+from .total_stats_window import TotalStatsWindow
 from database import FlightStatistics
 from openpyxl import load_workbook
 
@@ -49,7 +50,6 @@ class MainWindow(QtW.QWidget):
         button_new_flight = QtW.QPushButton('New flight', self)
         button_show_pending = QtW.QPushButton('Show pending', self)
         button_stats = QtW.QPushButton('Show total', self)
-        # bind
         button_import = QtW.QPushButton('Import', self)
         button_import.pressed.connect(self.__import_data)
 
@@ -74,6 +74,9 @@ class MainWindow(QtW.QWidget):
 
         self.__pending_flights_window = PendingFlightsWindow(self)
         button_show_pending.clicked.connect(self.__show_pending_flights_window)
+
+        self.__total_stats_window = TotalStatsWindow()
+        button_stats.clicked.connect(self.__show_total_stats_window)
 
         self.__close_confirmation_window = CloseConfirmationWindow(self)
 
@@ -156,6 +159,10 @@ class MainWindow(QtW.QWidget):
     def __show_pending_flights_window(self):
         self.__pending_flights_window.update_flight_schedule()
         self.__pending_flights_window.show()
+
+    def __show_total_stats_window(self):
+        self.__total_stats_window.update_statistics()
+        self.__total_stats_window.show()
 
     def __import_data(self):
         file_url = QtW.QFileDialog().getOpenFileName()[0]

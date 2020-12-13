@@ -25,7 +25,7 @@ class FlightDetailsWindow(QtW.QWidget):
         self.__layout.addWidget(QtW.QLabel('Arrival city'), 2, 0)
         self.__layout.addWidget(QtW.QLabel(flight.arrival_city), 2, 1)
 
-        self.__layout.addWidget(QtW.QLabel('Scheduled departure date'), 3, 0)
+        self.__layout.addWidget(QtW.QLabel('Departure date'), 3, 0)
         self.__layout.addWidget(QtW.QLabel(flight.scheduled_departure_date), 3, 1)
 
         self.__layout.addWidget(QtW.QLabel('Scheduled departure time'), 5, 0)

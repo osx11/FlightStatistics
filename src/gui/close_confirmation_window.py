@@ -12,7 +12,7 @@ class CloseConfirmationWindow(QtW.QWidget):
         self.__parent = parent
         self.__layout = QtW.QGridLayout()
 
-        label_confirm = QtW.QLabel('There are unclosed flights. Please confirm you want exit.'
+        label_confirm = QtW.QLabel('There are unclosed flights. Please confirm you want to exit.'
                                    '\nWARNING: you won\'t be able to continue current flight!')
         label_confirm_font = label_confirm.font()
         label_confirm_font.setPixelSize(22)
@@ -33,7 +33,7 @@ class CloseConfirmationWindow(QtW.QWidget):
         self.__layout.addWidget(button_cancel, 1, 1)
 
         self.setWindowModality(Qt.WindowModality(2))
-        self.setFixedSize(590, 300)
+        self.setFixedSize(610, 300)
         self.setWindowTitle('Exit confirmation')
         self.setLayout(self.__layout)
         self.setStyleSheet(Settings().style)

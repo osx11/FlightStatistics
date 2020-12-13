@@ -55,7 +55,7 @@ class PendingFlightsWindow(QtW.QWidget):
                  .order_by(FlightStatistics.scheduled_departure_date))
 
         if query.count() == 0:
-            header = QtW.QLabel('There are no flights')
+            header = QtW.QLabel('There are no pending flights')
         else:
             header = QtW.QLabel('Showing next 5 flights')
 
