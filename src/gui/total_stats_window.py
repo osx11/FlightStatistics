@@ -39,6 +39,9 @@ class TotalStatsWindow(QtW.QWidget):
         query_total_time = FlightStatistics.select(FlightStatistics.flight_time)
 
         for i in query_total_time:
+            if not i.flight_time:
+                continue
+
             flight_time = i.flight_time
             total_time += int(flight_time[:2]) + int(flight_time[-2:])/60
 
