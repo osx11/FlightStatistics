@@ -109,8 +109,6 @@ class NewFlightWindow(FormUtils, QtW.QWidget):
 
     def __handle_icao_input(self, icao_field, city_field):
         icao_field.setText(icao_field.text().upper())
-        city_field.setText('Please wait...')
-
         super()._revalidate_field_on_input(city_field)
 
         response = requests.post('https://openflights.org/php/apsearch.php', data={'icao': icao_field.text()})

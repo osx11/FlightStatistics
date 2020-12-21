@@ -13,6 +13,7 @@ class PendingFlightsWindow(QtW.QWidget):
 
         self.__parent = parent
         self.__layout = QtW.QGridLayout()
+        self.__progress = QtW.QLabel('Calculating distance: .../...')
 
         self.setWindowModality(Qt.WindowModality(2))
         self.setFixedSize(480, 300)
@@ -35,9 +36,11 @@ class PendingFlightsWindow(QtW.QWidget):
         self.update_flight_schedule()
 
     def __close_flight(self):
-        FlightStatistics.close_flight()
-        self.update_flight_schedule()
+        FlightStatistics.close_flight(self.__update_progressbar, self.__close_flight_post)
+        self.__progress.show()
 
+    def __close_flight_post(self):
+        self.update_flight_schedule()
         self.__parent.set_status('READY')
         self.__parent.render_flights()
 
@@ -97,3 +100,10 @@ class PendingFlightsWindow(QtW.QWidget):
             self.__layout.addWidget(details_button, pos+1, 2)
             self.__layout.addWidget(openclose_button, pos+1, 3)
             self.__layout.addWidget(delete_button, pos+1, 4)
+
+        self.__layout.addWidget(self.__progress, 7, 0, 1, 5)
+        self.__progress.hide()
+
+    def __update_progressbar(self, progress):
+        self.__progress.setText(progress)
+

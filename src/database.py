@@ -1,8 +1,8 @@
 from peewee import *
 from datetime import datetime, time
 from time import sleep
-from math import atan, sin, cos, pi, sqrt, pow
 from settings import Settings
+from utils.measurementutils import DistanceCalculator
 
 
 def create_tables():
@@ -65,12 +65,29 @@ class FlightStatistics(Model):
          .execute())
 
     @classmethod
-    def close_flight(cls):
+    def close_flight(cls, progressbar_updater, on_done):
+        def post(total_dist):
+            # total_dist = cls.calculate_total_distance(cls.get_opened_flight())
+
+            (FlightStatistics
+             .update(actual_arrival_date=now.strftime('%d.%m.%y'),
+                     actual_arrival_time=now.strftime('%H:%M'),
+                     flight_time=flight_time.strftime('%H:%M'),
+                     distance=total_dist)
+             .where(FlightStatistics.id == cls.get_opened_flight())
+             .execute())
+
+            delattr(cls, 'opened_flight')
+
+            on_done()
+
         now = datetime.now()
 
         flight = FlightStatistics.get_by_id(cls.get_opened_flight())
         departure_date = flight.scheduled_departure_date
         departure_time = flight.actual_departure_time
+
+        print(departure_date, departure_time)
 
         departure_datetime = datetime(int(departure_date[-2:]),
                                       int(departure_date[3:5]),
@@ -79,17 +96,12 @@ class FlightStatistics(Model):
                                       int(departure_time[-2:]))
         flight_time_delta = now - departure_datetime
         flight_time = time(flight_time_delta.seconds//3660, (flight_time_delta.seconds//60) % 60)
-        total_dist = cls.calculate_total_distance(cls.get_opened_flight())
 
-        (FlightStatistics
-         .update(actual_arrival_date=now.strftime('%d.%m.%y'),
-                 actual_arrival_time=now.strftime('%H:%M'),
-                 flight_time=flight_time.strftime('%H:%M'),
-                 distance=total_dist)
-         .where(FlightStatistics.id == cls.get_opened_flight())
-         .execute())
-
-        delattr(cls, 'opened_flight')
+        points = FlightStatistics.get_by_id(cls.get_opened_flight()).flight_points
+        distance_calculator = DistanceCalculator(points)
+        distance_calculator.calc_in_progress.connect(progressbar_updater)
+        distance_calculator.calc_done.connect(post)
+        distance_calculator.start()
 
     @classmethod
     def get_opened_flight(cls):
@@ -99,40 +111,6 @@ class FlightStatistics(Model):
     def add_point(cls, lat, lon, alt):
         if cls.has_opened_flight():
             FlightPoints.create(flight_id=cls.get_opened_flight(), latitude=lat, longitude=lon, altitude=alt)
-
-    @staticmethod
-    def calculate_total_distance(flight_id):
-        flight = FlightStatistics.get_by_id(flight_id)
-        total_dist = 0
-
-        for i in range(1, len(flight.flight_points)):
-            lat1 = flight.flight_points[i-1].latitude
-            lon1 = flight.flight_points[i-1].longitude
-            lat2 = flight.flight_points[i].latitude
-            lon2 = flight.flight_points[i].longitude
-
-            dist = FlightStatistics.calculate_distance_between_points(lat1, lon1, lat2, lon2)
-            total_dist += dist
-
-        return round(total_dist)
-
-    @staticmethod
-    def calculate_distance_between_points(lat1, lon1, lat2, lon2):
-        # formula from https://gis-lab.info/qa/great-circles.html
-
-        earth_radius = 3444  # in nautical miles
-
-        rlat1 = lat1 * pi / 180
-        rlon1 = lon1 * pi / 180
-        rlat2 = lat2 * pi / 180
-        rlon2 = lon2 * pi / 180
-
-        dlon = rlon2 - rlon1
-
-        y = (sqrt(pow(cos(rlat2) * sin(dlon), 2) + pow(cos(rlat1) * sin(rlat2) - sin(rlat1) * cos(rlat2) * cos(dlon), 2)))
-        x = sin(rlat1) * sin(rlat2) + cos(rlat1) * cos(rlat2) * cos(dlon)
-
-        return atan(y / x) * earth_radius
 
 
 class FlightPoints(Model):
