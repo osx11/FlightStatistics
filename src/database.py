@@ -79,15 +79,14 @@ class FlightStatistics(Model):
 
             delattr(cls, 'opened_flight')
 
-            on_done()
+            if on_done:
+                on_done()
 
         now = datetime.now()
 
         flight = FlightStatistics.get_by_id(cls.get_opened_flight())
         departure_date = flight.scheduled_departure_date
         departure_time = flight.actual_departure_time
-
-        print(departure_date, departure_time)
 
         departure_datetime = datetime(int(departure_date[-2:]),
                                       int(departure_date[3:5]),
@@ -99,7 +98,10 @@ class FlightStatistics(Model):
 
         points = FlightStatistics.get_by_id(cls.get_opened_flight()).flight_points
         distance_calculator = DistanceCalculator(points)
-        distance_calculator.calc_in_progress.connect(progressbar_updater)
+
+        if progressbar_updater:
+            distance_calculator.calc_in_progress.connect(progressbar_updater)
+
         distance_calculator.calc_done.connect(post)
         distance_calculator.start()
 

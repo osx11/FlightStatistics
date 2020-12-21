@@ -39,7 +39,10 @@ class CloseConfirmationWindow(QtW.QWidget):
         self.setStyleSheet(Settings().style)
 
     def __close(self):
-        FlightStatistics.close_flight()
-        self.close()
-        self.__parent.close()
+        def post():
+            self.close()
+            self.__parent.close()
+
+        FlightStatistics.close_flight(None, post)
+
 

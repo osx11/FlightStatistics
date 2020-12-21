@@ -36,13 +36,13 @@ class PendingFlightsWindow(QtW.QWidget):
         self.update_flight_schedule()
 
     def __close_flight(self):
-        FlightStatistics.close_flight(self.__update_progressbar, self.__close_flight_post)
-        self.__progress.show()
+        def post():
+            self.update_flight_schedule()
+            self.__parent.set_status('READY')
+            self.__parent.render_flights()
 
-    def __close_flight_post(self):
-        self.update_flight_schedule()
-        self.__parent.set_status('READY')
-        self.__parent.render_flights()
+        FlightStatistics.close_flight(self.__update_progressbar, post)
+        self.__progress.show()
 
     def __clear_layout(self):
         for i in reversed(range(self.__layout.count())):
