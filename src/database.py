@@ -67,8 +67,6 @@ class FlightStatistics(Model):
     @classmethod
     def close_flight(cls, progressbar_updater, on_done):
         def post(total_dist):
-            # total_dist = cls.calculate_total_distance(cls.get_opened_flight())
-
             (FlightStatistics
              .update(actual_arrival_date=now.strftime('%d.%m.%y'),
                      actual_arrival_time=now.strftime('%H:%M'),

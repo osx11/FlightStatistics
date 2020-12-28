@@ -9,10 +9,8 @@ class Settings:
         self.__path_cities = 'C:/Users/osx11/Documents/Pycharm/FlightStatistics/shapefiles/World_Cities/World_Cities'
         self.__database_file = 'C:/Users/osx11/Documents/Pycharm/FlightStatistics/flightstatistics.db'
 
-        self.__style = str()
         with open('gui/styles/style.css') as f:
-            for l in f:
-                self.__style += l
+            self.__style = f.read()
 
     @property
     def path_countries(self):
