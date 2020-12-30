@@ -85,12 +85,8 @@ class FlightStatistics(Model):
         flight = FlightStatistics.get_by_id(cls.get_opened_flight())
         departure_date = flight.scheduled_departure_date
         departure_time = flight.actual_departure_time
+        departure_datetime = datetime.strptime(f'{departure_date} {departure_time}', '%d.%m.%y %H:%M')
 
-        departure_datetime = datetime(int(departure_date[-2:]),
-                                      int(departure_date[3:5]),
-                                      int(departure_date[:2]),
-                                      int(departure_time[:2]),
-                                      int(departure_time[-2:]))
         flight_time_delta = now - departure_datetime
         flight_time = time(round(flight_time_delta.seconds/3600), round(flight_time_delta.seconds/60) % 60)
 
