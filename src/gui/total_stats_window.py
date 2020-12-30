@@ -54,7 +54,7 @@ class TotalStatsWindow(QtW.QWidget):
         if total_time_minutes < 10:
             total_time_minutes = f'0{total_time_minutes}'
 
-        self.__layout.addWidget(QtW.QLabel(f'{total_time_hours}:{total_time_minutes} hours'), 1, 1)
+        self.__layout.addWidget(QtW.QLabel(f'{total_time_hours}:{total_time_minutes}'), 1, 1)
 
         query_departures = FlightStatistics.select(FlightStatistics.departure_city.alias('airport')).distinct()
         query_arrivals = FlightStatistics.select(FlightStatistics.arrival_city.alias('airport')).distinct()

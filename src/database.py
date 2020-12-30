@@ -44,7 +44,15 @@ class FlightStatistics(Model):
 
         if schedule_next:
             now = datetime.now()
-            tomorrow = datetime(now.year, now.month, now.day + 1, 0, 0, 0)
+
+            try:
+                tomorrow = datetime(now.year, now.month, now.day + 1, 0, 0, 0)
+            except ValueError:
+                if now.month != 12:
+                    tomorrow = datetime(now.year, now.month + 1, 1, 0, 0, 0)
+                else:
+                    tomorrow = datetime(now.year + 1, 1, 1, 0, 0, 0)
+
             diff = tomorrow - now
 
             sleep(diff.seconds)
