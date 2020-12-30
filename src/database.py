@@ -92,7 +92,7 @@ class FlightStatistics(Model):
                                       int(departure_time[:2]),
                                       int(departure_time[-2:]))
         flight_time_delta = now - departure_datetime
-        flight_time = time(flight_time_delta.seconds//3660, (flight_time_delta.seconds//60) % 60)
+        flight_time = time(round(flight_time_delta.seconds/3600), round(flight_time_delta.seconds/60) % 60)
 
         points = FlightStatistics.get_by_id(cls.get_opened_flight()).flight_points
         distance_calculator = DistanceCalculator(points)
