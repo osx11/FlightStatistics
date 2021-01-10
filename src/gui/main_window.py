@@ -109,8 +109,9 @@ class MainWindow(QtW.QWidget):
         self.__row_count = query.count()
 
         previous_pos_was_nextday = False
+        pos = 0
 
-        for pos, flight in enumerate(query):
+        for flight in query:
             departure_date = flight.scheduled_departure_date[:5]
             arrival_date = flight.actual_arrival_date[:5]
             actual_departure_hour = int(flight.actual_departure_time[:2])
@@ -134,16 +135,18 @@ class MainWindow(QtW.QWidget):
             if not arrived_next_day:
                 if previous_pos_was_nextday:
                     pos += 1
+                    previous_pos_was_nextday = False
                 self.__saved_flights_layout.addWidget(QtW.QLabel(departure_date), pos, 0)
                 self.__saved_flights_layout.addWidget(timebar, pos, actual_departure_hour, 1, flight_time)
             else:
                 previous_pos_was_nextday = True
-                print(flight.departure_icao, arrival_date)
                 self.__saved_flights_layout.addWidget(QtW.QLabel(departure_date), pos, 0)
                 self.__saved_flights_layout.addWidget(QtW.QLabel(arrival_date), pos+1, 0)
 
                 self.__saved_flights_layout.addWidget(timebar, pos, actual_departure_hour, 1, (24-actual_departure_hour))
                 self.__saved_flights_layout.addWidget(timebar_nextday, pos+1, 1, 1, actual_arrival_hour)
+
+            pos += 1
 
     def __update_clock(self):
         while True:
