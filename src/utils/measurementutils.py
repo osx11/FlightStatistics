@@ -47,8 +47,7 @@ class DistanceCalculator(QThread):
 
         dlon = rlon2 - rlon1
 
-        y = (sqrt(
-            pow(cos(rlat2) * sin(dlon), 2) + pow(cos(rlat1) * sin(rlat2) - sin(rlat1) * cos(rlat2) * cos(dlon), 2)))
+        y = (sqrt(pow(cos(rlat2) * sin(dlon), 2) + pow(cos(rlat1) * sin(rlat2) - sin(rlat1) * cos(rlat2) * cos(dlon), 2)))
         x = sin(rlat1) * sin(rlat2) + cos(rlat1) * cos(rlat2) * cos(dlon)
 
         return atan(y / x) * earth_radius

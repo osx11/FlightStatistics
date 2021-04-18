@@ -3,6 +3,7 @@ from PyQt5.QtGui import QCursor
 from PyQt5.QtCore import Qt
 from shapefile import Reader
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.backend_bases import MouseButton
 import matplotlib.pyplot as plt
 from settings import Settings
 from utils.plotutils import PlotUtils
@@ -29,9 +30,11 @@ class RecordedFlightWindow(QtW.QWidget):
         self.__zoom_rect = None
 
         self.__canvas = FigureCanvasQTAgg(self.__fig)
-        self.__canvas.mpl_connect('motion_notify_event', self.__on_mouse_move_event)
         self.__canvas.mpl_connect('button_press_event', self.__on_mouse_press_event)
-        self.__canvas.mpl_connect('button_release_event', self.__on_mouse_release_event)
+        self.__canvas.mpl_connect('key_press_event', self.__on_key_press_event)
+
+        self.__canvas.setFocusPolicy(Qt.ClickFocus)
+        self.__canvas.setFocus()
 
         self.__layout = QtW.QGridLayout(self)
 
@@ -49,9 +52,14 @@ class RecordedFlightWindow(QtW.QWidget):
         button_toggle_cities.clicked.connect(self.__toggle_cities_visibility)
         button_toggle_cities.setCursor(QCursor(Qt.PointingHandCursor))
 
-        self.__layout.addWidget(button_reset_to_ww, 1, 0)
-        self.__layout.addWidget(button_rerender, 1, 1)
-        self.__layout.addWidget(button_toggle_cities, 2, 0, 1, 2)
+        label_info = QtW.QLabel('Right click - place zoom points, Left click - apply zoom, ESC - clear zoom rectangle')
+        label_info.setProperty('color', 'color_vlight')
+        label_info.setFixedHeight(50)
+
+        self.__layout.addWidget(label_info, 1, 0, 1, 2, Qt.AlignHCenter)
+        self.__layout.addWidget(button_reset_to_ww, 2, 0)
+        self.__layout.addWidget(button_rerender, 2, 1)
+        self.__layout.addWidget(button_toggle_cities, 3, 0, 1, 2)
 
         self.setLayout(self.__layout)
         self.setWindowTitle('Recorded flight')
@@ -119,8 +127,8 @@ class RecordedFlightWindow(QtW.QWidget):
         records = sf.records()
 
         world_square = 62504  # calculated using bbox of world's sf
-        test = abs(max(constraint[0], constraint[1]) - min(constraint[0], constraint[1])) * abs(max(constraint[2], constraint[3]) - min(constraint[2], constraint[3]))
-        zoom_level = int(world_square // test)
+        current_plot_square = abs(max(constraint[0], constraint[1]) - min(constraint[0], constraint[1])) * abs(max(constraint[2], constraint[3]) - min(constraint[2], constraint[3]))
+        zoom_level = int(world_square // current_plot_square)
 
         for city_index, city in enumerate(records):
             if PlotUtils.should_render_city(city['POP'], zoom_level):
@@ -152,15 +160,19 @@ class RecordedFlightWindow(QtW.QWidget):
             city.set_visible(False if city.get_visible() else True)
         self.__canvas.draw()
 
+    def __clear_zoom_rect(self):
+        if self.__zoom_rect:
+            self.__zoom_rect.remove()
+            self.__zoom_start_point = None
+
+        self.__zoom_rect = plt.Rectangle((0, 0), 0, 0, color='#f25555')
+        self.__ax.add_artist(self.__zoom_rect)
+
     def __clear_plot(self):
         self.__ax.clear()
         self.__constraint = self.__calculate_constraint()
 
-        if self.__zoom_rect:
-            self.__zoom_rect.remove()
-
-        self.__zoom_rect = plt.Rectangle((0, 0), 0, 0, color='#f25555')
-        self.__ax.add_artist(self.__zoom_rect)
+        self.__clear_zoom_rect()
 
     def __reset_plot_to_wholeworld(self):
         self.__constraint = [-180, 180, -90, 90]
@@ -187,24 +199,31 @@ class RecordedFlightWindow(QtW.QWidget):
         self.__canvas.draw()
 
     def __on_mouse_press_event(self, event):
-        self.__zoom_start_point = (event.xdata, event.ydata)
+        if event.button == MouseButton.RIGHT:
+            if not self.__zoom_start_point:
+                self.__zoom_start_point = (event.xdata, event.ydata)
+            else:
+                self.__draw_zoom_line(event.xdata, event.ydata)
+        elif event.button == MouseButton.LEFT:
+            if self.__zoom_rect.get_width() == 0 and self.__zoom_rect.get_height() == 0:
+                return
 
-    def __on_mouse_release_event(self, event):
-        bbox_points = self.__zoom_rect.get_bbox().get_points()
+            bbox_points = self.__zoom_rect.get_bbox().get_points()
 
-        xmin = min(bbox_points[0][0], bbox_points[1][0])
-        xmax = max(bbox_points[0][0], bbox_points[1][0])
-        ymin = min(bbox_points[0][1], bbox_points[1][1])
-        ymax = max(bbox_points[0][1], bbox_points[1][1])
+            xmin = min(bbox_points[0][0], bbox_points[1][0])
+            xmax = max(bbox_points[0][0], bbox_points[1][0])
+            ymin = min(bbox_points[0][1], bbox_points[1][1])
+            ymax = max(bbox_points[0][1], bbox_points[1][1])
 
-        self.__constraint = [xmin, xmax, ymin, ymax]
+            self.__constraint = [xmin, xmax, ymin, ymax]
 
-        self.__zoom_start_point = None
-        self.__zoom_rect.update({'xy': [0, 0], 'width': 0, 'height': 0})
+            self.__zoom_start_point = None
+            self.__zoom_rect.update({'xy': [0, 0], 'width': 0, 'height': 0})
 
-        self.__ax.axis(self.__constraint)
-        self.render_cities(self.__constraint)
+            self.__ax.axis(self.__constraint)
+            self.render_cities(self.__constraint)
 
-    def __on_mouse_move_event(self, event):
-        if self.__zoom_start_point:
-            self.__draw_zoom_line(event.xdata, event.ydata)
+    def __on_key_press_event(self, event):
+        if event.key == 'escape':
+            self.__clear_zoom_rect()
+            self.__canvas.draw()
