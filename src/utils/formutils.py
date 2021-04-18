@@ -62,7 +62,12 @@ class FormUtils(object):
         now = datetime.now()
 
         current_weekday = now.weekday()
-        remaining_to_saturday = 5 - current_weekday
+
+        if current_weekday == 6:  # if today is sunday, then take saturday on next week
+            remaining_to_saturday = 6
+        else:
+            remaining_to_saturday = 5 - current_weekday
+
         remaining_to_saturday_timestamp = 60*60*24*remaining_to_saturday
         saturday = datetime.fromtimestamp(now.timestamp() + remaining_to_saturday_timestamp)
 
