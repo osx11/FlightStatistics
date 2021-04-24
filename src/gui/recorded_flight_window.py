@@ -33,6 +33,7 @@ class RecordedFlightWindow(QtW.QWidget):
         self.__canvas.mpl_connect('button_press_event', self.__on_mouse_press_event)
         self.__canvas.mpl_connect('key_press_event', self.__on_key_press_event)
 
+        # without this key pressing won't be registered
         self.__canvas.setFocusPolicy(Qt.ClickFocus)
         self.__canvas.setFocus()
 
