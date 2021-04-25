@@ -129,8 +129,18 @@ class MainWindow(QtW.QWidget):
 
             arrived_next_day = arrival_date > departure_date
 
-            timebar = TimeBarWidget(f'{flight.departure_icao}-{flight.arrival_icao}', flight_time, flight.id)
-            timebar_nextday = TimeBarWidget(f'{flight.departure_icao}-{flight.arrival_icao}', flight_time, flight.id)
+            no_distance = flight.distance == 0
+
+            timebar = TimeBarWidget(self,
+                                    f'{flight.departure_icao}-{flight.arrival_icao}',
+                                    flight_time,
+                                    flight.id,
+                                    no_distance=no_distance)
+
+            timebar_nextday = TimeBarWidget(self,
+                                            f'{flight.departure_icao}-{flight.arrival_icao}',
+                                            flight_time, flight.id,
+                                            is_next_day=True)
 
             if not arrived_next_day:
                 if previous_pos_was_nextday:

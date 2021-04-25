@@ -40,6 +40,7 @@ class FlightStatistics(Model):
                  .where(FlightStatistics.flight_time == None))
 
         for flight in query:
+            print(flight.id)
             FlightStatistics.delete_by_id(flight.id)
 
         if schedule_next:

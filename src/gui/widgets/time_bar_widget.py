@@ -5,7 +5,7 @@ from gui.flight_details_window import FlightDetailsWindow
 
 
 class TimeBarWidget(QtW.QWidget):
-    def __init__(self, text, duration, flight_id):
+    def __init__(self, main_window, text, duration, flight_id, no_distance=False, is_next_day=False):
         super().__init__()
 
         self.__text = text
@@ -13,7 +13,9 @@ class TimeBarWidget(QtW.QWidget):
         self.__main_color, self.__top_color, self.__on_click_rect_main_color, self.__on_click_rect_top_color = self.__choose_colors()
         self.__event_rect = None
         self.__on_click_rect = None
-        self.__flight_details_window = FlightDetailsWindow(flight_id)
+        self.__flight_details_window = FlightDetailsWindow(flight_id, main_window=main_window)
+        self.__no_distance = no_distance
+        self.__is_next_day = is_next_day
 
         self.setCursor(QtGui.QCursor(Qt.PointingHandCursor))
 
@@ -65,10 +67,29 @@ class TimeBarWidget(QtW.QWidget):
         qp.setPen(QtGui.QColor(0, 0, 0))
         qp.setBrush(QtGui.QColor(0, 0, 0))
 
+        if self.__is_next_day:
+            qp.drawText(self.__event_rect, Qt.AlignCenter, '\u2190')
+            return
+
         if self.__duration >= 2:
             if self.__duration == 2:
                 qp_font = qp.font()
                 qp_font.setPixelSize(14)
                 qp.setFont(qp_font)
 
-            qp.drawText(self.__event_rect, Qt.AlignCenter, self.__text)
+            if self.__no_distance:
+                font = qp.font()
+                font.setBold(True)
+
+                if self.__duration == 2:
+                    qp.drawText(self.__event_rect, Qt.AlignCenter, '\u26a0')
+                else:
+                    qp.drawText(self.__event_rect, Qt.AlignLeft, '\u26a0')
+
+                    font.setBold(False)
+                    qp.setFont(font)
+
+                    qp.drawText(self.__event_rect, Qt.AlignCenter, self.__text)
+            else:
+                qp.drawText(self.__event_rect, Qt.AlignCenter, self.__text)
+

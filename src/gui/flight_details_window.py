@@ -7,8 +7,10 @@ from gui.recorded_flight_window import RecordedFlightWindow
 
 
 class FlightDetailsWindow(QtW.QWidget):
-    def __init__(self, flight_id):
+    def __init__(self, flight_id, main_window=None):
         super().__init__()
+
+        self.__main_window = main_window
 
         self.__layout = QtW.QGridLayout()
         self.__flight = FlightStatistics.get_by_id(flight_id)
@@ -90,7 +92,7 @@ class FlightDetailsWindow(QtW.QWidget):
 
             self.__layout.addWidget(button_show_rfw, 13, 0, 1, 2)
 
-        if distance_km == 0:
+        if distance_km == 0 and self.__main_window:
             self.__label_no_distance = QtW.QLabel('No distance in db. Provide it manually')
             self.__label_no_distance.setProperty('color', 'color_red')
 
@@ -113,6 +115,9 @@ class FlightDetailsWindow(QtW.QWidget):
         self.setStyleSheet(Settings().style)
         
     def __set_distance(self):
+        if not self.__main_window:
+            return
+
         if dist := self.__input_distance.text():
             dist = int(dist)
             if dist > 0:
@@ -128,6 +133,8 @@ class FlightDetailsWindow(QtW.QWidget):
 
                 dist_km = round(dist * 1.85)
                 self.__label_distance.setText(f'DIST: {dist} NM ({dist_km} KM)')
+
+                self.__main_window.render_flights()
 
     def __show_recording(self):
         self.__rfw.render_recorded_flight_plot()
