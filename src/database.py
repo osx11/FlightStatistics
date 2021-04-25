@@ -32,19 +32,18 @@ class FlightStatistics(Model):
     def delete_old_scheduled_flights(schedule_next=False):
         # !NOT FOR RUNNING IN MAIN THREAD IF schedule_next == True!
 
-        now = datetime.now().date()
+        now = datetime.now()
+        now_date = now.date()
 
         query = (FlightStatistics
                  .select()
                  .where(FlightStatistics.flight_time == None))
 
         for flight in query:
-            if datetime.strptime(flight.scheduled_departure_date, '%d.%m.%y').date() < now:
+            if datetime.strptime(flight.scheduled_departure_date, '%d.%m.%y').date() < now_date:
                 FlightStatistics.delete_by_id(flight.id)
 
         if schedule_next:
-            now = datetime.now()
-
             try:
                 tomorrow = datetime(now.year, now.month, now.day + 1, 0, 0, 0)
             except ValueError:
